@@ -33,7 +33,6 @@ class Config:
     
     # MCP Server Configuration
     MCP_SERVER_NAME: str = os.getenv('MCP_SERVER_NAME', 'natural-language-sql-server')
-    MCP_SERVER_VERSION: str = os.getenv('MCP_SERVER_VERSION', '1.0.0')
     
     # Logging Configuration
     LOG_LEVEL: str = os.getenv('LOG_LEVEL', 'INFO')

@@ -5,6 +5,9 @@ Setup configuration for Natural Language SQL MCP Server.
 from setuptools import setup, find_packages
 import os
 
+# Import version from centralized location
+from __version__ import __version__
+
 # Read README for long description
 def read_readme():
     with open("README.md", "r", encoding="utf-8") as fh:
@@ -17,13 +20,13 @@ def read_requirements():
 
 setup(
     name="natural-language-sql-mcp",
-    version="1.0.0",
+    version=__version__,
     author="Raza Hasnain",
-    author_email="your.email@example.com",
+    author_email="srhasnain2021@gmail.com",
     description="A Model Context Protocol server for natural language SQL querying",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
-    url="https://github.com/your-username/natural-language-sql-mcp",
+    url="https://github.com/razah-ai/chatql-mcp",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -67,8 +70,8 @@ setup(
         "model-context-protocol",
     ],
     project_urls={
-        "Bug Reports": "https://github.com/your-username/natural-language-sql-mcp/issues",
-        "Source": "https://github.com/your-username/natural-language-sql-mcp",
-        "Documentation": "https://github.com/your-username/natural-language-sql-mcp#readme",
+        "Bug Reports": "https://github.com/razah-ai/chatql-mcp/issues",
+        "Source": "https://github.com/razah-ai/chatql-mcp",
+        "Documentation": "https://github.com/razah-ai/chatql-mcp#readme",
     },
 ) 

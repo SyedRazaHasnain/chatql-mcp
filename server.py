@@ -6,7 +6,6 @@ A Model Context Protocol (MCP) server that provides natural language to SQL
 conversion capabilities for SQL Server databases.
 
 Author: Raza Hasnain
-Version: 1.0.0
 """
 
 import asyncio
@@ -34,6 +33,7 @@ import mcp.types as types
 from database_manager import DatabaseManager
 from language_processor import LanguageProcessor
 from config import Config
+from __version__ import __version__
 
 # Configure logging
 def configure_application_logging(configuration: Config) -> None:
@@ -478,7 +478,7 @@ async def initialize_and_run_server():
     """Initialize and run the MCP server with comprehensive setup."""
     global database_manager, language_processor
 
-    logger.info(f"Starting {application_config.MCP_SERVER_NAME} v{application_config.MCP_SERVER_VERSION}")
+    logger.info(f"Starting {application_config.MCP_SERVER_NAME} v{__version__}")
     
     try:
         # Validate configuration
@@ -511,7 +511,7 @@ async def initialize_and_run_server():
                 write_stream,
                 InitializationOptions(
                     server_name=application_config.MCP_SERVER_NAME,
-                    server_version=application_config.MCP_SERVER_VERSION,
+                    server_version=__version__,
                     capabilities=mcp_server.get_capabilities(
                         notification_options=NotificationOptions(),
                         experimental_capabilities={},
