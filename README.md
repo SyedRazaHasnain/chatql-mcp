@@ -319,6 +319,62 @@ flake8 .
 mypy .
 ```
 
+### 🏷️ Version Management
+
+This project uses a centralized versioning system with automated tools for contributors.
+
+#### **Quick Version Commands**
+```bash
+# Check current version
+python version_manager.py current
+
+# Bump version for bug fixes (1.0.0 → 1.0.1)
+python version_manager.py bump patch
+
+# Bump version for new features (1.0.1 → 1.1.0)
+python version_manager.py bump minor
+
+# Bump version for breaking changes (1.1.0 → 2.0.0)
+python version_manager.py bump major
+```
+
+#### **Semantic Versioning Guidelines**
+- **PATCH** (`1.0.1`) - Bug fixes, security patches
+- **MINOR** (`1.1.0`) - New features, database support additions
+- **MAJOR** (`2.0.0`) - Breaking changes, API modifications
+
+#### **Complete Release Workflow**
+1. **Make your changes** and test thoroughly
+2. **Update CHANGELOG.md** with your changes under `[Unreleased]`
+3. **Bump version** using the appropriate type:
+   ```bash
+   python version_manager.py bump minor -m "Added PostgreSQL support"
+   ```
+4. **Push changes** including tags:
+   ```bash
+   git push origin master --tags
+   ```
+
+#### **Version System Details**
+- ✅ **Single source of truth**: `__version__.py`
+- ✅ **Automatic git tagging**: Creates annotated tags (v1.0.0, v1.1.0, etc.)
+- ✅ **Auto-commit**: Commits version changes with proper messages
+- ✅ **No manual updates**: All files automatically sync with central version
+
+#### **Advanced Options**
+```bash
+# Set specific version
+python version_manager.py set 1.2.3
+
+# Skip git operations (for testing)
+python version_manager.py bump patch --no-commit --no-tag
+
+# Create tag with custom message
+python version_manager.py tag -m "Hotfix release"
+```
+
+> **Note for Contributors**: Always use the version manager script instead of manually editing version numbers. This ensures consistency across all project files.
+
 ## 🤝 Contributing
 
 We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on:
