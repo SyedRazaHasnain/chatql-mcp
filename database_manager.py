@@ -341,7 +341,7 @@ class DatabaseManager:
         """
         try:
             with self.get_connection() as conn:
-                result = conn.execute(text("SELECT @@VERSION as version, GETDATE() as current_time"))
+                result = conn.execute(text("SELECT @@VERSION as version, GETDATE() as server_time"))
                 row = result.fetchone()
                 
                 return {
