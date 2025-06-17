@@ -6,6 +6,21 @@
 
 A powerful **Model Context Protocol (MCP)** server that enables natural language querying of SQL Server databases. Transform your English questions into SQL queries automatically using OpenAI's GPT models, with intelligent schema awareness and query optimization.
 
+## 🗃️ Database Support
+
+**Currently Supported:**
+- ✅ **Microsoft SQL Server** (2017+)
+- ✅ **SQL Server Express**
+- ✅ **Azure SQL Database**
+
+**Coming Soon:**
+- 🔄 **PostgreSQL** (in development)
+- 🔄 **MySQL/MariaDB** (planned)
+- 🔄 **SQLite** (planned)
+- 🔄 **Oracle Database** (planned)
+
+> **Note:** This version is specifically designed for SQL Server. Support for additional database systems is actively being developed and will be available in future releases.
+
 ## 🌟 Features
 
 - 🗣️ **Natural Language to SQL**: Convert English questions to SQL queries automatically
