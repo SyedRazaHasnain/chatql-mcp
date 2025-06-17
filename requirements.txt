@@ -1,0 +1,27 @@
+# MCP Framework
+mcp>=1.9.0,<2.0.0
+
+# Database Dependencies
+pyodbc>=5.0.0,<6.0.0
+sqlalchemy>=2.0.0,<3.0.0
+
+# AI/ML Dependencies
+openai>=1.0.0,<2.0.0
+
+# Configuration Management
+python-dotenv>=1.0.0,<2.0.0
+
+# Data Validation
+pydantic>=2.0.0,<3.0.0
+
+# Optional Web Dependencies (for future extensions)
+fastapi>=0.100.0,<1.0.0
+uvicorn[standard]>=0.20.0,<1.0.0
+starlette>=0.27.0,<1.0.0
+httpx>=0.24.0,<1.0.0
+
+# Development Dependencies (optional)
+# pytest>=7.0.0
+# black>=23.0.0
+# flake8>=6.0.0
+# mypy>=1.0.0 
