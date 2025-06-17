@@ -1,4 +1,4 @@
-# Natural Language SQL MCP Server
+# ChatQL MCP Server
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
@@ -30,8 +30,8 @@ A powerful **Model Context Protocol (MCP)** server that enables natural language
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/natural-language-sql-mcp.git
-   cd natural-language-sql-mcp
+   git clone https://github.com/SyedRazaHasnain/chatql-mcp.git
+   cd chatql-mcp
    ```
 
 2. **Create a virtual environment**
@@ -72,7 +72,7 @@ A powerful **Model Context Protocol (MCP)** server that enables natural language
 
 When connected via MCP, the server provides these powerful tools:
 
-### 1. `natural_language_query`
+### 1. `execute_natural_language_query`
 Transform natural language into SQL and execute queries.
 
 **Example:**
@@ -80,7 +80,7 @@ Transform natural language into SQL and execute queries.
 Query: "Show me the top 10 customers by total order value"
 ```
 
-### 2. `direct_sql_query`
+### 2. `execute_direct_sql_query`
 Execute SQL queries directly with safety validation.
 
 **Example:**
@@ -90,13 +90,13 @@ FROM Customers c JOIN Orders o ON c.ID = o.CustomerID
 GROUP BY CustomerName ORDER BY Total DESC
 ```
 
-### 3. `get_table_info`
+### 3. `get_table_information`
 Get detailed schema information for any table.
 
-### 4. `list_tables`
+### 4. `list_database_tables`
 Explore all available tables in your database.
 
-### 5. `get_sample_data`
+### 5. `get_table_sample_data`
 Preview sample data from any table.
 
 ## 📋 Example Queries
@@ -138,7 +138,7 @@ OPENAI_MAX_TOKENS=2000           # Max tokens per request
 
 ### Server Settings
 ```env
-MCP_SERVER_NAME=natural-language-sql-server
+MCP_SERVER_NAME=chatql-mcp-server
 MCP_SERVER_VERSION=1.0.0
 LOG_LEVEL=INFO                   # DEBUG, INFO, WARNING, ERROR
 MAX_QUERY_RESULTS=100            # Limit query results
@@ -154,10 +154,10 @@ Add to your Claude configuration:
 ```json
 {
   "mcpServers": {
-       "natural-language-sql": {
-     "command": "python",
-     "args": ["/path/to/your/server.py"],
-     "env": {
+    "chatql-mcp": {
+      "command": "python",
+      "args": ["/path/to/your/server.py"],
+      "env": {
         "DB_SERVER": "localhost\\SQLEXPRESS",
         "DB_DATABASE": "YourDatabase",
         "OPENAI_API_KEY": "your-api-key"
@@ -254,10 +254,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- 🐛 **Found a bug?** [Open an issue](https://github.com/your-username/natural-language-sql-mcp/issues)
-- 💡 **Have a feature request?** [Start a discussion](https://github.com/your-username/natural-language-sql-mcp/discussions)
+- 🐛 **Found a bug?** [Open an issue](https://github.com/SyedRazaHasnain/chatql-mcp/issues)
+- 💡 **Have a feature request?** [Start a discussion](https://github.com/SyedRazaHasnain/chatql-mcp/discussions)
 - 📧 **Need help?** Check our [troubleshooting guide](#-troubleshooting)
 
 ---
 
-**Made with ❤️ by [Raza Hasnain](https://github.com/your-username)** 
+**Made with ❤️ by [Raza Hasnain](https://github.com/SyedRazaHasnain)** 
