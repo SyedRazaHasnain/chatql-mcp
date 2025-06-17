@@ -63,10 +63,9 @@ A powerful **Model Context Protocol (MCP)** server that enables natural language
    OPENAI_API_KEY=your_openai_api_key_here
    ```
 
-5. **Start the server**
-   ```bash
-   python server.py
-   ```
+5. **Connect to Claude Desktop**
+   
+   The server is designed to work with Claude Desktop. No need to start it manually - Claude will launch it automatically when you connect!
 
 ## 🛠️ Available Tools
 
@@ -145,31 +144,101 @@ MAX_QUERY_RESULTS=100            # Limit query results
 QUERY_TIMEOUT=30                 # Query timeout in seconds
 ```
 
-## 🔧 MCP Integration
+## 🔧 Connecting with Claude Desktop
 
-### Claude Desktop
+### How MCP Connection Works
 
-Add to your Claude configuration:
+Your ChatQL server uses the **Model Context Protocol (MCP)** with `stdio` communication:
+
+1. **Claude Desktop reads your config** → Finds your server details
+2. **Claude launches your server** → Runs `python server.py` as a subprocess  
+3. **Communicates via stdin/stdout** → JSON messages over standard streams
+4. **Your server stays running** → Processes requests until Claude closes
+
+### 1. **Find Claude Desktop Config File**
+
+**For Windows Users (Step-by-Step):**
+
+1. **Press `Windows Key + R`** (opens the Run dialog)
+2. **Type:** `%APPDATA%` and press Enter
+3. **Look for the "Claude" folder** and double-click it
+4. **Find the file:** `claude_desktop_config.json`
+   - If the file doesn't exist, create it by right-clicking → New → Text Document
+   - Name it exactly: `claude_desktop_config.json` (not .txt!)
+
+**For Mac Users:**
+1. **Press `Cmd + Shift + G`** (opens Go to Folder)
+2. **Type:** `~/Library/Application Support/Claude/`
+3. **Find or create:** `claude_desktop_config.json`
+
+### 2. **Edit the Config File**
+
+**Open the file with Notepad (Windows) or TextEdit (Mac) and add this:**
 
 ```json
 {
   "mcpServers": {
     "chatql-mcp": {
       "command": "python",
-      "args": ["/path/to/your/server.py"],
+      "args": ["C:/Users/YourUsername/Desktop/mcp/server.py"],
       "env": {
         "DB_SERVER": "localhost\\SQLEXPRESS",
         "DB_DATABASE": "YourDatabase",
-        "OPENAI_API_KEY": "your-api-key"
+        "OPENAI_API_KEY": "your-openai-api-key"
       }
     }
   }
 }
 ```
 
+**🚨 CRITICAL: Replace these with YOUR actual values:**
+- `C:/Users/YourUsername/Desktop/mcp/server.py` → **Your actual full path to server.py**
+- `YourDatabase` → **Your actual database name**  
+- `your-openai-api-key` → **Your actual OpenAI API key**
+
+**💡 How to find your server.py path:**
+1. **Navigate to your project folder** (where you saved ChatQL)
+2. **Right-click on `server.py`**
+3. **Click "Properties"** (Windows) or "Get Info" (Mac)
+4. **Copy the full path** and paste it in the config
+
+### 3. **Start Claude Desktop**
+
+1. **Save your configuration file** (Ctrl+S)
+2. **Close Claude Desktop completely** (right-click system tray icon → Exit)
+3. **Reopen Claude Desktop** (it will read your new config)
+4. **Look for MCP tools** in Claude's interface
+
+### 4. **Test Your Connection**
+
+Once Claude Desktop has restarted, try these test queries:
+
+#### **Natural Language Queries:**
+- *"What tables are available in my database?"*
+- *"Show me sample data from the customers table"*
+- *"How many records are in each table?"*
+
+#### **Direct SQL:**
+- *"Execute this SQL: SELECT TOP 5 * FROM YourTable"*
+- *"Get the schema information for the orders table"*
+
+### 5. **Success Indicators**
+
+**When Claude connects successfully, you'll see:**
+- 🔧 **MCP tools listed** in Claude's tool panel
+- 📊 **Rich database responses** with formatted tables
+- ⚡ **Fast query execution** from your database
+- 🛡️ **Safety validations** blocking dangerous queries
+
+**If connection fails, check:**
+- ✅ **File path is correct** in your config
+- ✅ **Python is in your PATH** 
+- ✅ **All dependencies installed** (`pip install -r requirements.txt`)
+- ✅ **Database connection works** (check your `.env` file)
+
 ### Other MCP Clients
 
-This server follows the standard MCP protocol and should work with any compatible client.
+This server follows the standard MCP protocol and works with any MCP-compatible client.
 
 ## 🛡️ Security & Safety
 
