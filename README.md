@@ -6,6 +6,8 @@
 
 A powerful **Model Context Protocol (MCP)** server that enables natural language querying of SQL Server databases. Transform your English questions into SQL queries automatically using OpenAI's GPT models, with intelligent schema awareness and query optimization.
 
+**🚀 Perfect for developers using Cursor AI** - Integrate directly into your development workflow for instant database insights, schema exploration, and data analysis without leaving your code editor.
+
 ## 🗃️ Database Support
 
 **Currently Supported:**
@@ -23,14 +25,25 @@ A powerful **Model Context Protocol (MCP)** server that enables natural language
 
 ## 🌟 Features
 
+### **Core Database Capabilities**
 - 🗣️ **Natural Language to SQL**: Convert English questions to SQL queries automatically
 - 🧠 **Schema-Aware**: Intelligent understanding of your database structure
 - 🔍 **Multiple Query Methods**: Natural language, direct SQL, and schema exploration
 - 📊 **Rich Results**: Formatted results with explanations and query analysis
 - 🛡️ **Safety First**: Built-in query validation and result limiting
-- 🔌 **MCP Protocol**: Native integration with AI assistants supporting MCP
+
+### **Developer Integration**
+- 🔌 **MCP Protocol**: Native integration with Claude Desktop and Cursor AI
+- 💻 **IDE Integration**: Perfect for development workflows in Cursor
 - ⚡ **High Performance**: Connection pooling and query optimization
 - 🎯 **Professional Logging**: Comprehensive logging and error handling
+
+### **Perfect for Development Teams**
+- 🚀 **Rapid Prototyping**: Get database insights without leaving your code editor
+- 🔍 **Schema Exploration**: Understand database structure while coding
+- 🐛 **Data Debugging**: Find data issues quickly during development
+- 📊 **Quick Analytics**: Generate reports and insights on-demand
+- 🏗️ **Database Design**: Understand relationships and optimize queries
 
 ## 🚀 Quick Start
 
@@ -78,9 +91,13 @@ A powerful **Model Context Protocol (MCP)** server that enables natural language
    OPENAI_API_KEY=your_openai_api_key_here
    ```
 
-5. **Connect to Claude Desktop**
+5. **Connect to your AI client**
    
-   The server is designed to work with Claude Desktop. No need to start it manually - Claude will launch it automatically when you connect!
+   Choose your preferred AI client:
+   - **🖥️ Claude Desktop** - General use and data analysis
+   - **💻 Cursor AI** - Perfect for development workflows (Recommended for developers!)
+   
+   No need to start the server manually - your AI client will launch it automatically!
 
 ## 🛠️ Available Tools
 
@@ -117,20 +134,34 @@ Preview sample data from any table.
 
 Here are some example natural language queries you can try:
 
-### Business Intelligence
+### 💻 Development Workflows (Perfect for Cursor)
+- *"Show me all database tables and their relationships"*
+- *"What columns are in the users table?"*
+- *"Give me sample data from the products table for testing"*
+- *"Find users created in the last week for debugging"*
+- *"Are there any foreign key constraints I should know about?"*
+- *"Show me the schema for the orders table"*
+
+### 📊 Business Intelligence
 - *"What are our top 5 selling products this month?"*
 - *"Show me customers who haven't ordered in the last 90 days"*
 - *"What's the average order value by region?"*
 
-### Data Exploration
+### 🔍 Data Exploration
 - *"How many records are in the customers table?"*
 - *"What are the different product categories we have?"*
 - *"Show me all orders placed yesterday"*
 
-### Analytics
+### 📈 Analytics
 - *"What's our monthly revenue trend for this year?"*
 - *"Which sales rep has the highest performance?"*
 - *"Find duplicate customer records"*
+
+### 🐛 Debugging & Troubleshooting
+- *"Find orphaned records in the order_items table"*
+- *"Show me users with missing email addresses"*
+- *"What are the most common error codes in our logs table?"*
+- *"Find products that have never been ordered"*
 
 ## ⚙️ Configuration Options
 
@@ -159,16 +190,24 @@ MAX_QUERY_RESULTS=100            # Limit query results
 QUERY_TIMEOUT=30                 # Query timeout in seconds
 ```
 
-## 🔧 Connecting with Claude Desktop
+## 🔧 Connecting with AI Clients
+
+### Supported MCP Clients
+
+This server works with any MCP-compatible client:
+
+- **✅ Claude Desktop** - Official Anthropic desktop application
+- **✅ Cursor AI** - AI-powered code editor (Perfect for development!)
+- **✅ Other MCP Clients** - Any application supporting the MCP protocol
 
 ### How MCP Connection Works
 
 Your ChatQL server uses the **Model Context Protocol (MCP)** with `stdio` communication:
 
-1. **Claude Desktop reads your config** → Finds your server details
-2. **Claude launches your server** → Runs `python server.py` as a subprocess  
+1. **Client reads your config** → Finds your server details
+2. **Client launches your server** → Runs `python server.py` as a subprocess  
 3. **Communicates via stdin/stdout** → JSON messages over standard streams
-4. **Your server stays running** → Processes requests until Claude closes
+4. **Your server stays running** → Processes requests until client closes
 
 ### 1. **Find Claude Desktop Config File**
 
@@ -250,6 +289,111 @@ Once Claude Desktop has restarted, try these test queries:
 - ✅ **Python is in your PATH** 
 - ✅ **All dependencies installed** (`pip install -r requirements.txt`)
 - ✅ **Database connection works** (check your `.env` file)
+
+## 🎯 Cursor AI Integration (Developers)
+
+### Why Use ChatQL with Cursor?
+
+**Transform your development workflow** by connecting your database directly to Cursor AI:
+
+- 🔍 **Instant Schema Exploration** - "Show me all tables in this database"
+- 📊 **Quick Data Analysis** - "What are the most common user types in our system?"
+- 🐛 **Debug Data Issues** - "Find users who have orders but no email address"
+- 🏗️ **Database Design Help** - "Show me the relationship between users and orders tables"
+- ⚡ **Rapid Prototyping** - Get sample data for testing without writing SQL
+
+### Setting Up with Cursor
+
+#### **1. Configure Cursor for MCP**
+
+Create or edit your Cursor settings file:
+
+**Windows:** `%APPDATA%\Cursor\User\settings.json`
+**Mac:** `~/Library/Application Support/Cursor/User/settings.json`
+**Linux:** `~/.config/Cursor/User/settings.json`
+
+Add the MCP configuration:
+
+```json
+{
+  "mcp.servers": {
+    "chatql-mcp": {
+      "command": "python",
+      "args": ["C:/path/to/your/project/server.py"],
+      "env": {
+        "DB_SERVER": "localhost\\SQLEXPRESS",
+        "DB_DATABASE": "YourDatabase",
+        "OPENAI_API_KEY": "your-openai-api-key"
+      }
+    }
+  }
+}
+```
+
+#### **2. Development Workflow Examples**
+
+##### **🔍 Database Exploration During Development**
+```
+Developer: "What tables do I have available?"
+ChatQL: Shows all database tables with schemas
+
+Developer: "Show me the structure of the users table"
+ChatQL: Displays columns, data types, constraints, relationships
+
+Developer: "Give me sample data from the orders table"
+ChatQL: Returns formatted sample records
+```
+
+##### **🐛 Debugging Data Issues**
+```
+Developer: "Find all users created in the last 7 days"
+ChatQL: Converts to SQL and shows recent users
+
+Developer: "Are there any orphaned records in order_items?"
+ChatQL: Checks for referential integrity issues
+
+Developer: "Show me users with duplicate email addresses"
+ChatQL: Finds and displays duplicate data
+```
+
+##### **📊 Quick Analytics for Features**
+```
+Developer: "What's the distribution of user roles in our system?"
+ChatQL: Groups and counts user roles
+
+Developer: "Show me the average order value by month"
+ChatQL: Generates time-based analytics
+
+Developer: "Which products have never been ordered?"
+ChatQL: Finds unused inventory
+```
+
+#### **3. Cursor-Specific Benefits**
+
+- **🎯 Context-Aware**: Cursor can see your code and database structure simultaneously
+- **⚡ Lightning Fast**: No switching between database tools and your editor
+- **🧠 Intelligent Queries**: Cursor understands your codebase context for better questions
+- **🔄 Iterative Development**: Ask follow-up questions based on query results
+- **📝 Code Generation**: Generate database-related code based on schema insights
+
+#### **4. Example Development Session**
+
+```
+# Working on a user dashboard feature
+Developer: "Show me the user table structure"
+ChatQL: Returns user schema with all fields
+
+Developer: "What's the relationship between users and their orders?"
+ChatQL: Shows JOIN relationships and foreign keys
+
+Developer: "Give me sample data for testing the dashboard"
+ChatQL: Returns realistic test data
+
+Developer: "How many users registered each month this year?"
+ChatQL: Generates registration analytics
+
+# Cursor can now suggest code based on this database knowledge!
+```
 
 ### Other MCP Clients
 
