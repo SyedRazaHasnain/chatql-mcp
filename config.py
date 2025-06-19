@@ -41,6 +41,10 @@ class Config:
     MAX_QUERY_RESULTS: int = int(os.getenv('MAX_QUERY_RESULTS', '100'))
     QUERY_TIMEOUT: int = int(os.getenv('QUERY_TIMEOUT', '30'))  # seconds
     
+    # Security Configuration
+    SELECT_ONLY_MODE: bool = os.getenv('SELECT_ONLY_MODE', 'false').lower() == 'true'
+    ALLOW_MODE_TOGGLE: bool = os.getenv('ALLOW_MODE_TOGGLE', 'true').lower() == 'true'
+    
     @property
     def connection_string(self) -> str:
         """

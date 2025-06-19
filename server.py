@@ -151,6 +151,29 @@ async def list_available_tools() -> List[types.Tool]:
                 },
                 "required": ["table_name"]
             }
+        ),
+        types.Tool(
+            name="toggle_select_only_mode",
+            description="Toggle SELECT-only mode to restrict database operations to read-only queries",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "enabled": {
+                        "type": "boolean",
+                        "description": "True to enable SELECT-only mode, False to allow all operations"
+                    }
+                },
+                "required": ["enabled"]
+            }
+        ),
+        types.Tool(
+            name="get_security_mode_status",
+            description="Get current security mode status (SELECT-only mode)",
+            inputSchema={
+                "type": "object",
+                "properties": {},
+                "additionalProperties": False
+            }
         )
     ]
 
@@ -177,6 +200,10 @@ async def handle_tool_execution(
             return await list_all_database_tables(tool_arguments)
         elif tool_name == "get_table_sample_data":
             return await retrieve_table_sample_data(tool_arguments)
+        elif tool_name == "toggle_select_only_mode":
+            return await toggle_select_only_mode(tool_arguments)
+        elif tool_name == "get_security_mode_status":
+            return await get_security_mode_status(tool_arguments)
         else:
             error_message = f"Unknown tool: {tool_name}"
             logger.error(error_message)
@@ -470,6 +497,86 @@ async def retrieve_table_sample_data(arguments: Dict[str, Any]) -> List[types.Te
         
     except Exception as exception:
         error_message = f"Error retrieving sample data: {str(exception)}"
+        logger.error(error_message, exc_info=True)
+        return [types.TextContent(type="text", text=f"❌ {error_message}")]
+
+
+async def toggle_select_only_mode(arguments: Dict[str, Any]) -> List[types.TextContent]:
+    """Toggle SELECT-only mode for enhanced security."""
+    enabled = arguments.get("enabled", True)
+    
+    try:
+        logger.info(f"Toggling SELECT-only mode: {enabled}")
+        
+        # Toggle the mode in database manager
+        result = database_manager.set_select_only_mode(enabled)
+        
+        if result.get('success'):
+            response_sections = []
+            response_sections.append(f"🔒 **Security Mode Updated**")
+            response_sections.append(f"**Status:** {result['message']}")
+            
+            if enabled:
+                response_sections.append("\n⚠️ **SELECT-Only Mode ENABLED**")
+                response_sections.append("- Only SELECT queries are allowed")
+                response_sections.append("- All CREATE, INSERT, UPDATE, DELETE operations are blocked")
+                response_sections.append("- Enhanced security for read-only operations")
+            else:
+                response_sections.append("\n✅ **Full Access Mode ENABLED**") 
+                response_sections.append("- All SQL operations are allowed")
+                response_sections.append("- CREATE, INSERT, UPDATE, DELETE operations permitted")
+                response_sections.append("- Standard safety validations still apply")
+            
+            return [types.TextContent(type="text", text="\n".join(response_sections))]
+        else:
+            return [types.TextContent(type="text", text=f"❌ **Error:** {result.get('error')}")]
+            
+    except Exception as exception:
+        error_message = f"Error toggling SELECT-only mode: {str(exception)}"
+        logger.error(error_message, exc_info=True)
+        return [types.TextContent(type="text", text=f"❌ {error_message}")]
+
+
+async def get_security_mode_status(arguments: Dict[str, Any]) -> List[types.TextContent]:
+    """Get current security mode status."""
+    try:
+        logger.info("Getting security mode status")
+        
+        # Get current mode status
+        result = database_manager.get_select_only_mode()
+        
+        if result.get('success'):
+            response_sections = []
+            response_sections.append("🔒 **Security Mode Status**")
+            
+            current_mode = result['select_only_mode']
+            can_toggle = result['can_toggle']
+            
+            if current_mode:
+                response_sections.append("**Current Mode:** SELECT-Only (Read-Only)")
+                response_sections.append("**Status:** 🔒 RESTRICTED - Only SELECT queries allowed")
+                response_sections.append("**Allowed Operations:** SELECT, Schema queries")
+                response_sections.append("**Blocked Operations:** INSERT, UPDATE, DELETE, CREATE, DROP, ALTER")
+            else:
+                response_sections.append("**Current Mode:** Full Access")
+                response_sections.append("**Status:** ✅ UNRESTRICTED - All operations allowed")
+                response_sections.append("**Allowed Operations:** All SQL operations")
+                response_sections.append("**Safety:** Standard dangerous operation blocking still active")
+            
+            response_sections.append(f"\n**Toggle Available:** {'Yes' if can_toggle else 'No (disabled by configuration)'}")
+            
+            if can_toggle:
+                response_sections.append("\n💡 **How to Toggle:**")
+                response_sections.append("- Use the 'Toggle SELECT-Only Mode' tool")
+                response_sections.append("- Set 'enabled' to true for SELECT-only")
+                response_sections.append("- Set 'enabled' to false for full access")
+            
+            return [types.TextContent(type="text", text="\n".join(response_sections))]
+        else:
+            return [types.TextContent(type="text", text=f"❌ **Error:** {result.get('error')}")]
+            
+    except Exception as exception:
+        error_message = f"Error getting security mode status: {str(exception)}"
         logger.error(error_message, exc_info=True)
         return [types.TextContent(type="text", text=f"❌ {error_message}")]
 

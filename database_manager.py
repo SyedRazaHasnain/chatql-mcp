@@ -37,6 +37,10 @@ class DatabaseManager:
         self.config = config or Config()
         self.engine: Optional[Engine] = None
         self._metadata: Optional[MetaData] = None
+        
+        # SELECT-only mode state
+        self._select_only_mode = self.config.SELECT_ONLY_MODE
+        
         self._connect()
     
     def _connect(self) -> None:
@@ -104,6 +108,112 @@ class DatabaseManager:
             if connection:
                 connection.close()
     
+    def set_select_only_mode(self, enabled: bool) -> Dict[str, Any]:
+        """
+        Enable or disable SELECT-only mode.
+        
+        Args:
+            enabled: True to enable SELECT-only mode, False to allow all operations
+            
+        Returns:
+            Dict containing the operation result
+        """
+        if not self.config.ALLOW_MODE_TOGGLE:
+            return {
+                'success': False,
+                'error': 'Mode toggle is disabled by configuration'
+            }
+        
+        previous_mode = self._select_only_mode
+        self._select_only_mode = enabled
+        
+        logger.info(f"SELECT-only mode {'enabled' if enabled else 'disabled'}")
+        
+        return {
+            'success': True,
+            'message': f"SELECT-only mode {'enabled' if enabled else 'disabled'}",
+            'previous_mode': previous_mode,
+            'current_mode': enabled
+        }
+    
+    def get_select_only_mode(self) -> Dict[str, Any]:
+        """
+        Get current SELECT-only mode status.
+        
+        Returns:
+            Dict containing the current mode status
+        """
+        return {
+            'success': True,
+            'select_only_mode': self._select_only_mode,
+            'can_toggle': self.config.ALLOW_MODE_TOGGLE
+        }
+    
+    def _validate_query_for_select_only_mode(self, query: str) -> Dict[str, Any]:
+        """
+        Validate query against SELECT-only mode restrictions.
+        
+        Args:
+            query: SQL query string to validate
+            
+        Returns:
+            Dict containing validation result
+        """
+        if not self._select_only_mode:
+            return {'is_valid': True, 'message': 'All operations allowed'}
+        
+        query_upper = query.strip().upper()
+        
+        # Only allow SELECT statements in SELECT-only mode
+        if not query_upper.startswith('SELECT'):
+            return {
+                'is_valid': False,
+                'message': 'Only SELECT queries are allowed in SELECT-only mode'
+            }
+        
+        # Additional validation for SELECT queries to prevent dangerous operations
+        dangerous_keywords = ['DROP', 'TRUNCATE', 'DELETE', 'UPDATE', 'INSERT', 'ALTER', 'CREATE']
+        for keyword in dangerous_keywords:
+            if keyword in query_upper:
+                return {
+                    'is_valid': False,
+                    'message': f'SELECT-only mode: Query contains forbidden keyword: {keyword}'
+                }
+        
+        return {'is_valid': True, 'message': 'SELECT query validated'}
+    
+    def test_connection(self) -> Dict[str, Any]:
+        """
+        Test database connection and return server information.
+        
+        Returns:
+            Dict containing connection test results and server info
+        """
+        try:
+            with self.get_connection() as conn:
+                # Test connection with a simple query
+                result = conn.execute(text("SELECT @@VERSION as version, @@SERVERNAME as server_name"))
+                server_info = dict(result.fetchone())
+                
+                return {
+                    'success': True,
+                    'message': 'Database connection successful',
+                    'server_info': server_info
+                }
+                
+        except Exception as e:
+            logger.error(f"Database connection test failed: {e}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def close(self) -> None:
+        """Close database connections and cleanup resources."""
+        if self.engine:
+            self.engine.dispose()
+            logger.info("Database connections closed")
+    
     def execute_query(self, query: str, parameters: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Execute SQL query and return results.
@@ -125,17 +235,27 @@ class DatabaseManager:
                     'error': 'Empty query provided'
                 }
             
-            # Remove potentially dangerous operations for safety
-            dangerous_keywords = ['DROP', 'TRUNCATE', 'DELETE FROM', 'ALTER', 'CREATE']
-            query_upper = query.upper()
+            # Check SELECT-only mode first
+            select_only_validation = self._validate_query_for_select_only_mode(query)
+            if not select_only_validation['is_valid']:
+                logger.warning(f"Query blocked by SELECT-only mode: {query[:100]}...")
+                return {
+                    'success': False,
+                    'error': select_only_validation['message']
+                }
             
-            for keyword in dangerous_keywords:
-                if keyword in query_upper and not query_upper.strip().startswith('SELECT'):
-                    logger.warning(f"Potentially dangerous query blocked: {query[:100]}...")
-                    return {
-                        'success': False,
-                        'error': f'Query contains potentially dangerous keyword: {keyword}'
-                    }
+            # Remove potentially dangerous operations for safety (only when not in SELECT-only mode)
+            if not self._select_only_mode:
+                dangerous_keywords = ['DROP', 'TRUNCATE', 'DELETE FROM', 'ALTER', 'CREATE']
+                query_upper = query.upper()
+                
+                for keyword in dangerous_keywords:
+                    if keyword in query_upper and not query_upper.strip().startswith('SELECT'):
+                        logger.warning(f"Potentially dangerous query blocked: {query[:100]}...")
+                        return {
+                            'success': False,
+                            'error': f'Query contains potentially dangerous keyword: {keyword}'
+                        }
             
             with self.get_connection() as conn:
                 # Use parameterized queries if parameters provided

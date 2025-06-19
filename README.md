@@ -31,6 +31,7 @@ A powerful **Model Context Protocol (MCP)** server that enables natural language
 - 🔍 **Multiple Query Methods**: Natural language, direct SQL, and schema exploration
 - 📊 **Rich Results**: Formatted results with explanations and query analysis
 - 🛡️ **Safety First**: Built-in query validation and result limiting
+- 🔒 **SELECT-Only Mode**: Toggle between read-only and full database access
 
 ### **Developer Integration**
 - 🔌 **MCP Protocol**: Native integration with Claude Desktop and Cursor AI
@@ -130,6 +131,18 @@ Explore all available tables in your database.
 ### 5. `get_table_sample_data`
 Preview sample data from any table.
 
+### 6. `toggle_select_only_mode` 🔒
+Toggle between SELECT-only (read-only) and full database access modes.
+
+**Example:**
+```
+Enable SELECT-only mode: {"enabled": true}
+Enable full access: {"enabled": false}
+```
+
+### 7. `get_security_mode_status` 🔒
+Check current security mode and available permissions.
+
 ## 📋 Example Queries
 
 Here are some example natural language queries you can try:
@@ -188,6 +201,12 @@ MCP_SERVER_VERSION=1.0.0
 LOG_LEVEL=INFO                   # DEBUG, INFO, WARNING, ERROR
 MAX_QUERY_RESULTS=100            # Limit query results
 QUERY_TIMEOUT=30                 # Query timeout in seconds
+```
+
+### Security Settings
+```env
+SELECT_ONLY_MODE=false           # Start in SELECT-only mode
+ALLOW_MODE_TOGGLE=true           # Allow clients to toggle modes
 ```
 
 ## 🔧 Connecting with AI Clients
@@ -406,8 +425,54 @@ This server follows the standard MCP protocol and works with any MCP-compatible 
 - **Result Limiting**: Automatic limits prevent memory exhaustion
 - **Parameterized Queries**: Protection against SQL injection
 - **Connection Pooling**: Secure and efficient database connections
+- **SELECT-Only Mode**: Toggle-able read-only mode for enhanced security
+
+### 🔒 SELECT-Only Mode
+
+A powerful security feature that allows you to restrict database operations to read-only queries:
+
+#### **How It Works**
+- **Enabled**: Only SELECT queries are allowed, all INSERT, UPDATE, DELETE, CREATE, DROP, ALTER operations are blocked
+- **Disabled**: All SQL operations are permitted (with standard safety validations)
+- **Toggle**: Can be switched on/off from the client using the `toggle_select_only_mode` tool
+
+#### **Use Cases**
+- **🔍 Data Exploration**: Safe browsing of database contents without risk of modification
+- **📊 Reporting & Analytics**: Generate reports with zero risk of data corruption
+- **👥 Team Collaboration**: Allow team members to explore data safely
+- **🧪 Development**: Test queries without affecting production data
+- **📚 Learning**: Perfect for learning SQL without database modification risks
+
+#### **Client Integration**
+
+**In Claude Desktop or Cursor:**
+```
+# Enable SELECT-only mode
+Ask: "Enable SELECT-only mode for safety"
+
+# Check current status
+Ask: "What is the current security mode?"
+
+# Disable SELECT-only mode
+Ask: "Disable SELECT-only mode to allow full access"
+```
+
+**Configuration Options:**
+```env
+# Start server in SELECT-only mode
+SELECT_ONLY_MODE=true
+
+# Disable mode toggle (force current mode)
+ALLOW_MODE_TOGGLE=false
+```
+
+#### **Security Indicators**
+- **🔒 RESTRICTED**: SELECT-only mode active
+- **✅ UNRESTRICTED**: Full access mode active
+- **❌ BLOCKED**: Operation blocked by security mode
 
 ### Best Practices
+- Start with SELECT-only mode enabled for new environments
 - Use read-only database accounts when possible
 - Never expose the server to the internet
 - Store credentials securely using environment variables
